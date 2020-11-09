@@ -1,11 +1,18 @@
 package by.bivis.telegramBot;
 
 import by.bivis.settings.Settings;
-import java.util.concurrent.CompletableFuture;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
+
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TgBot extends TelegramLongPollingBot {
@@ -15,27 +22,59 @@ public class TgBot extends TelegramLongPollingBot {
     public TgBot() throws IOException {
     }
 
-
+    @Override
     public String getBotUsername() {
         return BOTUSERNAME;
     }
 
+    @Override
     public String getBotToken() {
         return TOKEN;
     }
 
+    @Override
     public void onUpdateReceived(Update update) {
-        if (update.getMessage() != null && update.getMessage().hasText()) {
-            String chatId = update.getMessage().getChatId().toString();
 
-            try {
-                execute(new SendMessage(chatId, "Пошёл нахуй, " + update.getMessage().getText()));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
 
+        if (update.getMessage().getText().equals("/start")) {
+            sendReplyMsg(update.getMessage(), "Пососи", false, new String[] {"/help", "/settings", "/info"});
         }
+
     }
 
+    public void setKeyboard(SendMessage sendMessage, String[] textButtons) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        sendMessage.setReplyMarkup(replyKeyboardMarkup);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+        List<KeyboardRow> keyboardRowList = new ArrayList<>(); // create keyboard row
+        KeyboardRow keyboardRowFirstLine = new KeyboardRow(); // create firs line of keyboard row
+        for (String button : textButtons) {
+            keyboardRowFirstLine.add(new KeyboardButton(button)); // add button in first line
+        }
+        keyboardRowList.add(keyboardRowFirstLine); // add first line to keyboard row
+        replyKeyboardMarkup.setKeyboard(keyboardRowList);
+    }
+
+    public synchronized void sendReplyMsg(Message message, String text, boolean itsReply, String[] keyboardArgs) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.enableMarkdown(true);
+        sendMessage.setChatId(message.getChatId().toString());
+        if (itsReply) {
+            sendMessage.setReplyToMessageId(message.getMessageId());
+        }
+        sendMessage.setText(text);
+
+        try {
+            if (keyboardArgs != null) {
+                setKeyboard(sendMessage, keyboardArgs); // add button row under text field after sending message
+            }
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

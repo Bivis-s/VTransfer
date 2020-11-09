@@ -12,10 +12,10 @@ public class Run {
         TgBot tgBot = new TgBot();
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
 
-    try {
-        telegramBotsApi.registerBot(tgBot);
-    } catch (TelegramApiException e) {
-        e.printStackTrace();
-    }
+        try {
+            telegramBotsApi.registerBot(tgBot);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class Settings {
     public static String getSetting(String Property) throws IOException {
-        File cfgFile = new File("./settings/tokens.properties");
+        File cfgFile = new File("./Machine/src/main/resources/tokens.properties");
         Properties properties = new Properties();
         properties.load(new FileReader(cfgFile));
         return properties.getProperty(Property);
