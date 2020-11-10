@@ -17,14 +17,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TgBot extends TelegramLongPollingBot {
     private final String TOKEN = Settings.getSetting("tgToken");
-    private final String BOTUSERNAME = Settings.getSetting("tgBotUsername");
+    private final String BOT_USERNAME = Settings.getSetting("tgBotUsername");
 
     public TgBot() throws IOException {
     }
 
     @Override
     public String getBotUsername() {
-        return BOTUSERNAME;
+        return BOT_USERNAME;
     }
 
     @Override
@@ -37,12 +37,12 @@ public class TgBot extends TelegramLongPollingBot {
 
 
         if (update.getMessage().getText().equals("/start")) {
-            sendReplyMsg(update.getMessage(), "Пососи", false, new String[] {"/help", "/settings", "/info"});
+            sendMsg(update.getMessage(), "https://sun9-48.userapi.com/WjSsrzNh3mVps_ISx4NKAxkd7UQQIPDty4-9eQ/wiM8w5MHf2U.jpg", false, new String[]{"/help", "/settings", "/info"});
         }
 
     }
 
-    public void setKeyboard(SendMessage sendMessage, String[] textButtons) {
+    public void setKeyboard(SendMessage sendMessage, String[] buttonsText) {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
@@ -51,21 +51,23 @@ public class TgBot extends TelegramLongPollingBot {
 
         List<KeyboardRow> keyboardRowList = new ArrayList<>(); // create keyboard row
         KeyboardRow keyboardRowFirstLine = new KeyboardRow(); // create firs line of keyboard row
-        for (String button : textButtons) {
+        for (String button : buttonsText) {
             keyboardRowFirstLine.add(new KeyboardButton(button)); // add button in first line
         }
         keyboardRowList.add(keyboardRowFirstLine); // add first line to keyboard row
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
     }
 
-    public synchronized void sendReplyMsg(Message message, String text, boolean itsReply, String[] keyboardArgs) {
+    public synchronized void sendMsg(Message message, String text, boolean itsReply, String[] keyboardArgs) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.enableMarkdown(true);
         sendMessage.setChatId(message.getChatId().toString());
         if (itsReply) {
             sendMessage.setReplyToMessageId(message.getMessageId());
         }
-        sendMessage.setText(text);
+
+        //replace _ char to \\_ for escaping exception ...why?
+        sendMessage.setText(text.replaceAll("_", "\\\\_"));
 
         try {
             if (keyboardArgs != null) {
