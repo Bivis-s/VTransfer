@@ -12,4 +12,11 @@ public abstract class Attachment {
     public String getType() {
         return type;
     }
+
+    @Override
+    public String toString() {
+        return "Attachment{" +
+                "type='" + type + '\'' +
+                '}';
+    }
 }
