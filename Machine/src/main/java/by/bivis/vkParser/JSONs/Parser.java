@@ -24,11 +24,12 @@ public class Parser {
         return sendGet.send(api_method);
     }
 
+
     public static void main(String[] args) throws Exception {
         Parser parser = new Parser();
         String wall = parser.parseWall();
 
-        ReadWrite.write("./Machine/src/main/resources/parser_resources/3PostsOnSasambasWall.json", new String[] {wall});
+        ReadWrite.write("./settings/3postsSasamba.json", new String[] {wall});
 
         JSONObject jsonObject = new JSONObject(wall);
         Object toPrint = jsonObject.getJSONObject("response");

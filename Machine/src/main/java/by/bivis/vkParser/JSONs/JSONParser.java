@@ -19,7 +19,7 @@ import java.util.List;
 public class JSONParser {
 
     //
-    private static JsonNode readJson(String content) throws IOException {
+    protected static JsonNode readJson(String content) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readValue(content, JsonNode.class);
         System.out.println(rootNode);
@@ -101,10 +101,10 @@ public class JSONParser {
     }
 
     public static void main(String[] args) throws IOException {
-        String jsonString = ReadWrite.read("./Machine/src/main/resources/parser_resources/foreignPostsOnMyWall.json");
+        String jsonString = ReadWrite.read("./settings/3postsSasamba.json");
         JsonNode jsonNode = readJson(jsonString);
         System.out.println();
-        Post post = makePostObject(jsonNode.get("response").get("items").get(1));
+        Post post = makePostObject(jsonNode.get("response").get("items").get(0));
         System.out.println(post.toString());
         System.out.println(post.getType());
         System.out.println(post.getAttachments());

@@ -1,11 +1,12 @@
 package by.bivis.vkParser.posts;
 
+import by.bivis.database.SQLAble;
 import by.bivis.vkParser.posts.attachments.Attachment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Post {
+public class Post implements SQLAble {
     private final int id; // post id (in url)
     private final int fromId; // id who posted
     private final int ownerId; // wall's owner id (in url)
@@ -79,5 +80,10 @@ public class Post {
                 ", markedAsAds=" + markedAsAds +
                 ", isPinned=" + isPinned +
                 '}';
+    }
+
+    @Override
+    public String toSQLString() {
+        return id + ", " + ownerId + ", " + date;
     }
 }
