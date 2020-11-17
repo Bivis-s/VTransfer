@@ -1,21 +1,25 @@
 package by.bivis.database;
 
+import by.bivis.telegramBot.users.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Manipulator {
-    final static String dbAddress = "database.sqlite";
+    final static String dbAddress = "database2.sqlite";
+    Connection connection;
+    Statement statement;
 
     private void execute(String q) throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
-        Statement statement = connection.createStatement();
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
+        statement = connection.createStatement();
         statement.execute(q);
     }
 
     private ResultSet executeDQL(String q) throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
-        Statement statement = connection.createStatement();
+        connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
+        statement = connection.createStatement();
         return statement.executeQuery(q);
     }
 
@@ -34,8 +38,8 @@ public class Manipulator {
         return false;
     }
 
-    public List<Subscriptions> getSubscriptionsList(int userId) throws SQLException {
-        ResultSet resultSet = executeDQL("SELECT user_id, source_id FROM connection WHERE user_id=" + userId + "; ");
+    public List<Subscriptions> getSubscriptionsList(User user) throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT user_id, source_id FROM connection WHERE user_id=" + user.getId() + "; ");
 
         List<Subscriptions> subscriptionsList = new ArrayList<>();
         while (resultSet.next()) {
@@ -54,5 +58,34 @@ public class Manipulator {
 
     public void removeByPK(String table, int id) throws SQLException {
         execute("DELETE FROM " + table + " WHERE id=" + id + "; ");
+    }
+
+    public void resetUser(User user) throws SQLException {
+        removeByPK("users", user.getId());
+        insert("users", user);
+    }
+
+    public void deleteUser(User user) throws SQLException {
+        removeByPK("users", user.getId());
+    }
+
+    public void updateCondition(User user) throws SQLException {
+        execute("UPDATE users SET condition='" + user.getCondition() + "' WHERE id=" + user.getId() + "; ");
+    }
+
+    public String getSourceName(Subscriptions subscriptions) throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT name FROM sources WHERE id=" + subscriptions.getSourceId() + "; ");
+        resultSet.next();
+        return resultSet.getString("name");
+    }
+
+    public boolean thereIsUser(User user) throws SQLException {
+        return findPK("users", user.getId());
+    }
+
+    public String getCondition(User user) throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT condition FROM users WHERE id=" + user.getId() + "; ");
+        resultSet.next();
+        return resultSet.getString("condition");
     }
 }

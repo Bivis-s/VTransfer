@@ -17,8 +17,8 @@ public class Parser {
     public Parser() throws IOException {
     }
 
-    public String parseWall() throws Exception {
-        String api_method = String.format(API_URL, "wall.get", "owner_id=-126771813&count=3");
+    public String parseWall(int ownerId, int count) throws Exception {
+        String api_method = String.format(API_URL, "wall.get", "owner_id=-" + ownerId + "&count=" + count);
         System.out.println(api_method);
         SendGet sendGet = new SendGet();
         return sendGet.send(api_method);
@@ -27,9 +27,9 @@ public class Parser {
 
     public static void main(String[] args) throws Exception {
         Parser parser = new Parser();
-        String wall = parser.parseWall();
+        String wall = parser.parseWall(82476651, 5);
 
-        ReadWrite.write("./settings/3postsSasamba.json", new String[] {wall});
+        ReadWrite.write("./settings/5postsChai.json", new String[] {wall});
 
         JSONObject jsonObject = new JSONObject(wall);
         Object toPrint = jsonObject.getJSONObject("response");

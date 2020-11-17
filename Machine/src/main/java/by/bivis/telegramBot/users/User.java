@@ -8,14 +8,25 @@ public class User implements SQLAble {
     private final String firstName;
     private final String lastName;
     private final String languageCode;
+    private String condition;
 
 
-    public User(int id, String name, String firstName, String lastName, String languageCode) {
+    public User(int id, String name, String firstName, String lastName, String languageCode, String condition) {
         this.id = id;
         this.name = name;
         this.firstName = firstName;
         this.lastName = lastName;
         this.languageCode = languageCode;
+        this.condition = condition;
+    }
+
+    public User(org.telegram.telegrambots.meta.api.objects.User user, String condition) {
+        this.id = user.getId();
+        this.name = user.getUserName();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.languageCode = user.getLanguageCode();
+        this.condition = condition;
     }
 
     public int getId() {
@@ -38,10 +49,17 @@ public class User implements SQLAble {
         return languageCode;
     }
 
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
 
     @Override
     public String toSQLString() {
-        return id + ", '" + name + "', '" + firstName + "', '" + lastName + "', '" + languageCode + "'";
+        return id + ", '" + name + "', '" + firstName + "', '" + lastName + "', '" + languageCode + "', '" + condition + "'";
     }
 
     @Override
