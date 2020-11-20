@@ -22,7 +22,8 @@ public class GroupSearch {
 
     public static void main(String[] args) throws Exception {
         GroupSearch groupSearch = new GroupSearch();
-        System.out.println(groupSearch.makeSourceObjectList("лентач", 10));
+        System.out.println(groupSearch.makeSourceObjectList("Jjjjsjsjjjjjj", 10));
+        System.out.println(groupSearch.makeSourceObject("лентач"));
     }
 
     private String searchGroup (String q, int count) throws Exception {
@@ -32,11 +33,12 @@ public class GroupSearch {
         return sendGet.send(api_method);
     }
 
-    private Source makeSourceObject(JsonNode itemNode) {
+    private Source makeSourceObjectFromNode(JsonNode itemNode) {
         int id = itemNode.get("id").asInt();
         String screenName = itemNode.get("screen_name").asText();
         String name = itemNode.get("name").asText();
-        return new Source(id, screenName, name);
+        String photoURL = itemNode.get("photo_200").asText();
+        return new Source(id, screenName, name, photoURL);
     }
 
     public List<Source> makeSourceObjectList(String q, int count) throws Exception {
@@ -45,8 +47,14 @@ public class GroupSearch {
         JsonNode groups = JSONParser.readJson(searched).get("response").get("items");
 
         for (int i = 0; i < groups.size(); i++) {
-            sourceList.add(makeSourceObject(groups.get(i)));
+            sourceList.add(makeSourceObjectFromNode(groups.get(i)));
         }
         return sourceList;
+    }
+    // can return null if group has not been searched
+    public Source makeSourceObject(String q) throws Exception {
+        String searched = searchGroup(q, 1);
+        JsonNode groups = JSONParser.readJson(searched).get("response").get("items");
+        return makeSourceObjectFromNode(groups.get(0));
     }
 }
