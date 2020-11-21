@@ -4,8 +4,6 @@ import by.bivis.settings.Settings;
 import by.bivis.vkParser.JSONs.tools.SendGet;
 import by.bivis.vkParser.sources.Source;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,22 +21,30 @@ public class GroupSearch {
     public static void main(String[] args) throws Exception {
         GroupSearch groupSearch = new GroupSearch();
         System.out.println(groupSearch.makeSourceObjectList("Jjjjsjsjjjjjj", 10));
-        System.out.println(groupSearch.makeSourceObject("лентач"));
+        System.out.println(groupSearch.makeSourceObjectFromSearch("лентач"));
+    }
+
+    private Source getSource(JsonNode jsonNode) {
+        int id = jsonNode.get("id").asInt();
+        String screenName = jsonNode.get("screen_name").asText();
+        String name = jsonNode.get("name").asText();
+        String photoUrl = jsonNode.get("photo_200").asText();
+        return new Source(id, screenName, name, photoUrl);
+    }
+
+    public Source makeSourceFromScreenName(String q) throws Exception { // screen_name or id
+        String apiMethod = String.format(API_URL, "groups.getById", "group_id=" + q);
+        SendGet sendGet = new SendGet();
+        String got = sendGet.send(apiMethod);
+        JsonNode jsonNode = JSONParser.readJson(got).get("response").get(0);
+        return getSource(jsonNode);
     }
 
     private String searchGroup (String q, int count) throws Exception {
-        String api_method = String.format(API_URL, "groups.search", "q=" + q.replaceAll(" ", "_") + "&count=" + count);
-        System.out.println(api_method);
+        String apiMethod = String.format(API_URL, "groups.search", "q=" + q.replaceAll(" ", "_") + "&count=" + count);
+        System.out.println(apiMethod);
         SendGet sendGet = new SendGet();
-        return sendGet.send(api_method);
-    }
-
-    private Source makeSourceObjectFromNode(JsonNode itemNode) {
-        int id = itemNode.get("id").asInt();
-        String screenName = itemNode.get("screen_name").asText();
-        String name = itemNode.get("name").asText();
-        String photoURL = itemNode.get("photo_200").asText();
-        return new Source(id, screenName, name, photoURL);
+        return sendGet.send(apiMethod);
     }
 
     public List<Source> makeSourceObjectList(String q, int count) throws Exception {
@@ -47,14 +53,14 @@ public class GroupSearch {
         JsonNode groups = JSONParser.readJson(searched).get("response").get("items");
 
         for (int i = 0; i < groups.size(); i++) {
-            sourceList.add(makeSourceObjectFromNode(groups.get(i)));
+            sourceList.add(getSource(groups.get(i)));
         }
         return sourceList;
     }
     // can return null if group has not been searched
-    public Source makeSourceObject(String q) throws Exception {
+    public Source makeSourceObjectFromSearch(String q) throws Exception {
         String searched = searchGroup(q, 1);
         JsonNode groups = JSONParser.readJson(searched).get("response").get("items");
-        return makeSourceObjectFromNode(groups.get(0));
+        return getSource(groups.get(0));
     }
 }

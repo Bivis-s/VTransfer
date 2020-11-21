@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Manipulator {
-    final static String dbAddress = "database4.sqlite";
+    final static String dbAddress = "database.sqlite";
     java.sql.Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
     Statement statement;
 

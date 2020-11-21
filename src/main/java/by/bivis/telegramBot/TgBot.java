@@ -1,7 +1,6 @@
 package by.bivis.telegramBot;
 
 import by.bivis.database.Manipulator;
-import by.bivis.database.Connection;
 import by.bivis.settings.Settings;
 
 import java.sql.SQLException;
@@ -48,31 +47,15 @@ public class TgBot extends TelegramLongPollingBot {
         User user = new User(message.getFrom(), "none");
         String textFromMessage = update.getMessage().getText();
 
-//        // set user condition from database
-//        try {
-//            if (manipulator.thereIsUser(user)) {
-//                try {
-//                    user.setCondition(manipulator.getCondition(user));
-//                } catch (SQLException throwables) {
-//                    throwables.printStackTrace();
-//                }
-//            }
-//        } catch (SQLException throwables) {
-//            throwables.printStackTrace();
-//        }
-
         if (textFromMessage.equals("/start")) {
             user.setCondition("start");
             try {
                 manipulator.resetUser(user);
-
-                sendMsg(update.getMessage(), "Я рад, что мы встретились! \nДавай подпишем тебя на парочку групп. \nНажми кнопку /add чтобы сделать это", false, new String[]{"/add", "/info"});
-                System.out.println("Пользователь успешно обновлён!");
+                sendMsg(update.getMessage(), "Я рад, что мы встретились! \nДавай подпишем тебя на парочку групп. \nНажми кнопку /add чтобы сделать это", false, new String[]{});
+                sendMsg(update.getMessage(), Settings.infoText, false, new String[]{"/add", "/info"});
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-//            sendMsg(update.getMessage(), "https://sun9-48.userapi.com/WjSsrzNh3mVps_ISx4NKAxkd7UQQIPDty4-9eQ/wiM8w5MHf2U.jpg", false, new String[]{"/add", "/start", "/info"});
-//            System.out.println(update.getMessage().getReplyToMessage().getText());
 
         } else if (textFromMessage.equals("/stop")) {
             try {
@@ -103,7 +86,7 @@ public class TgBot extends TelegramLongPollingBot {
                 user.setCondition("add");
                 manipulator.updateCondition(user);
 
-                sendMsg(update.getMessage(), "Введи название группы", false, new String[]{"/continue"});
+                sendMsg(update.getMessage(), "Введи название группы", false, new String[]{"/add", "/continue"});
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -135,37 +118,21 @@ public class TgBot extends TelegramLongPollingBot {
                 throwables.printStackTrace();
             }
         } else if (textFromMessage.equals("/info")) {
-
-            String infoText = "Приветстую тебя, странник" +
-                    "\n" +
-                    "Если ты давно хотел избавить себя от тяготы нахождения в соцсети ВКонтакте, но тебя останавливало наличие там уникального контента, то поздравляю- проблема решена." +
-                    "\n" +
-                    "Этот бот позволяет перенести все твои подписки из отвртительного ВКонтакта в прекрасный Телеграм, пользуйся!" +
-                    "\n" +
-                    "-----" +
-                    "\n" +
-                    "Список команд:" +
-                    "\n" +
-                    "/start" +
-                    "\n" +
-                    "/info - ты сейчас тут" +
-                    "\n" +
-                    "/add - активирует режим добавления групп. После её ввода каждое сообщение будет восприниматься как запрос на подписку, до ввода следующей команды" +
-                    "\n" +
-                    "/continue - сброс всех режимов и включение режима парсинга" +
-                    "\n" +
-                    "/delete - активирует режим удаления групп" +
-                    "\n" +
-                    "/stop - останавливает режим парсинга" +
-                    "\n" +
-                    "/killme - удаление тебя из базы данных, полный сброс";
-            sendMsg(update.getMessage(), infoText, false, new String[]{"/continue"});
-        }
-        else {
-
+            sendMsg(update.getMessage(), Settings.infoText, false, new String[]{"/continue"});
+        } else {
+            // Режим добавления
             try {
                 if ((textFromMessage.charAt(0) != '/') && (manipulator.getCondition(user).equals("add"))) {
-                    Source source = groupSearch.makeSourceObject(textFromMessage);
+
+                    //Определяем что нам передано: название группы для поиска или ссылка и соответсвующим методом делаем объект источника
+                    Source source;
+                    if (textFromMessage.contains("vk.com/")) {
+                        //TODO заменить бы эту хуйню на нормальный regex
+                        String screen_name = textFromMessage.replaceFirst("https://", "").replaceFirst("vk\\.com/", "");
+                        source = groupSearch.makeSourceFromScreenName(screen_name);
+                    } else {
+                        source = groupSearch.makeSourceObjectFromSearch(textFromMessage);
+                    }
 
                     if (manipulator.thereIsConnection(user, source)) {
                         sendMsg(update.getMessage(), "Вы уже подписаны на " + source.getName() + "\nhttps://vk.com/" + source.getScreen_name(), true, new String[]{"/add", "/continue"});
