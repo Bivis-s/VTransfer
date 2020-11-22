@@ -1,6 +1,7 @@
 package by.bivis.database;
 
 import by.bivis.telegramBot.users.User;
+import by.bivis.vkParser.posts.Post;
 import by.bivis.vkParser.sources.Source;
 
 import java.sql.*;
@@ -16,13 +17,11 @@ public class Manipulator {
     }
 
     private void execute(String q) throws SQLException {
-//        connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
         statement = connection.createStatement();
         statement.execute(q);
     }
 
     private ResultSet executeDQL(String q) throws SQLException {
-//        connection = DriverManager.getConnection("jdbc:sqlite:" + dbAddress);
         statement = connection.createStatement();
         return statement.executeQuery(q);
     }
@@ -63,6 +62,17 @@ public class Manipulator {
         ResultSet resultSet = executeDQL("SELECT name FROM sources WHERE id=" + connection.getSource().getName() + "; ");
         resultSet.next();
         return resultSet.getString("name");
+    }
+
+    public boolean thereIsPost(Post post) throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT id FROM posts WHERE id=" + post.getId() + " AND source_id =  " + post.getOwnerId() + "; ");
+
+        while (resultSet.next()) {
+            if (post.getId() == resultSet.getInt("id")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean thereIsSource(Source source) throws SQLException {
@@ -112,8 +122,12 @@ public class Manipulator {
         }
     }
 
-    public void addSource (Source source) throws SQLException {
+    public void addSource(Source source) throws SQLException {
         insert("sources", source);
+    }
+
+    public void addPost(Post post) throws SQLException {
+        insert("posts", post);
     }
 
     public String getCondition(User user) throws SQLException {
@@ -122,7 +136,7 @@ public class Manipulator {
         return resultSet.getString("condition");
     }
 
-    public Source getSourceById (int sourceId) throws SQLException {
+    public Source getSourceById(int sourceId) throws SQLException {
         ResultSet resultSet = executeDQL("SELECT * FROM sources WHERE id=" + sourceId + "; ");
         resultSet.next();
         int id = resultSet.getInt("id");
@@ -133,5 +147,23 @@ public class Manipulator {
         return new Source(id, screenName, name, photoURL);
     }
 
+    // возвращает список id групп, на которых подписан хотя бы один человек;
+    public List<Integer> getConnectedSourceIds() throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT DISTINCT source_id from connection;");
+        List<Integer> ids = new ArrayList<>();
+        while (resultSet.next()) {
+            ids.add(resultSet.getInt("source_id"));
+        }
+        return ids;
+    }
 
+    // возвращает список пользователей, которые подписаны на данную группу
+    public List<Integer> getConnectedUserIds(int sourceId) throws SQLException {
+        ResultSet resultSet = executeDQL("SELECT user_id from connection WHERE source_id= " + sourceId + ";");
+        List<Integer> ids = new ArrayList<>();
+        while (resultSet.next()) {
+            ids.add(resultSet.getInt("user_id"));
+        }
+        return ids;
+    }
 }

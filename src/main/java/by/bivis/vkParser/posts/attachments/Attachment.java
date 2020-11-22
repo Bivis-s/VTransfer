@@ -13,6 +13,8 @@ public abstract class Attachment {
         return type;
     }
 
+    public abstract String getUrl();
+
     @Override
     public String toString() {
         return "Attachment{" +

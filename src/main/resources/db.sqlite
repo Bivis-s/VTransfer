@@ -1,0 +1,27 @@
+PRAGMA foreign_keys=on;
+
+CREATE TABLE users (
+	id INTEGER PRIMARY KEY,
+	name VARCHAR,
+	first_name VARCHAR,
+	last_name VARCHAR,
+	language_code VARCHAR,
+	condition VARCHAR);
+
+CREATE TABLE sources (
+	id INTEGER PRIMARY KEY,
+	screen_name VARCHAR,
+	name VARCHAR,
+	photo_url VARCHAR);
+
+CREATE TABLE connection (
+	user_id INTEGER NOT NULL,
+	source_id INTEGER NOT NULL,
+	FOREIGN KEY (user_id) REFERENCES users(id),
+	FOREIGN KEY (source_id) REFERENCES sources(id));
+
+CREATE TABLE posts (
+	id INTEGER,
+	source_id INTEGER NOT NULL,
+	post_date VARCHAR,
+	FOREIGN KEY (source_id) REFERENCES sources(id));

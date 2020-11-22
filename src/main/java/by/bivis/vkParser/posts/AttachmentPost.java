@@ -19,6 +19,17 @@ public class AttachmentPost extends Post {
         return attachments;
     }
 
+    public int getPrintableAttachmentsQuantity() {
+        int count = 0;
+        for (Attachment attachment : attachments) {
+            String type = attachment.getType();
+            if (type.equals("photo") || type.equals("video")) {
+                count += 1;
+            }
+        }
+        return count;
+    }
+
     @Override
     public String toString() {
         return "AttachmentPost{" +

@@ -6,7 +6,7 @@ import by.bivis.vkParser.JSONs.tools.SendGet;
 import org.json.JSONObject;
 import java.io.IOException;
 
-// just parse simple get-request
+// TODO REDUNDANT, REMOVE
 
 public class Parser {
     private final String TOKEN = Settings.getSetting("vkToken");
@@ -22,20 +22,5 @@ public class Parser {
         System.out.println(api_method);
         SendGet sendGet = new SendGet();
         return sendGet.send(api_method);
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        Parser parser = new Parser();
-        String wall = parser.parseWall(82476651, 5);
-
-        ReadWrite.write("./settings/5postsChai.json", new String[] {wall});
-
-        JSONObject jsonObject = new JSONObject(wall);
-        Object toPrint = jsonObject.getJSONObject("response");
-        System.out.println(toPrint);
-        System.out.println(toPrint.getClass());
-
-        //TODO ЕБИСЬ С ЭТИМ!
     }
 }

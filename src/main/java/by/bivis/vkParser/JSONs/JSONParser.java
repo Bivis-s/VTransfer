@@ -1,6 +1,8 @@
 package by.bivis.vkParser.JSONs;
 
+import by.bivis.settings.Settings;
 import by.bivis.vkParser.JSONs.tools.ReadWrite;
+import by.bivis.vkParser.JSONs.tools.SendGet;
 import by.bivis.vkParser.posts.AttachmentPost;
 import by.bivis.vkParser.posts.Post;
 import by.bivis.vkParser.posts.attachments.Attachment;
@@ -18,13 +20,31 @@ import java.util.List;
 
 public class JSONParser {
 
+    private static String TOKEN = null;
+
+    static {
+        try {
+            TOKEN = Settings.getSetting("vkToken");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private final static String API_VERSION = "5.124";
+    //First argument - Method name, second - parameters
+    private final static String API_URL = "https://api.vk.com/method/%s?%s&access_token=" + TOKEN + "&v=" + API_VERSION;
+
+    public static String parseWall(int ownerId, int count) throws Exception {
+        String api_method = String.format(API_URL, "wall.get", "owner_id=-" + ownerId + "&count=" + count);
+        System.out.println(api_method);
+        SendGet sendGet = new SendGet();
+        return sendGet.send(api_method);
+    }
+
     //
     protected static JsonNode readJson(String content) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readValue(content, JsonNode.class);
-        System.out.println(rootNode);
-        System.out.println(rootNode.getClass());
-        return rootNode;
+        return mapper.readValue(content, JsonNode.class);
     }
 
     // jsonNode here is JsonObject ARRAY (item["attachments"]["photo"]["sizes"])
@@ -100,13 +120,20 @@ public class JSONParser {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        String jsonString = ReadWrite.read("./settings/3postsSasamba.json");
-        JsonNode jsonNode = readJson(jsonString);
-        System.out.println();
-        Post post = makePostObject(jsonNode.get("response").get("items").get(0));
-        System.out.println(post.toString());
-        System.out.println(post.getType());
-        System.out.println(post.getAttachments());
+    //
+    public static List<Post> makePostObjectsList(int ownerId, int count) throws Exception {
+        String jsonString = parseWall(ownerId, count);
+        JsonNode jsonItemsNode = readJson(jsonString).get("response").get("items");
+        List<Post> posts = new ArrayList<>();
+        try {
+            if (jsonItemsNode != null) {
+                for (int i = 0; i < jsonItemsNode.size(); i++) {
+                    posts.add(makePostObject(jsonItemsNode.get(i)));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return posts;
     }
 }

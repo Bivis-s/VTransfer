@@ -10,13 +10,23 @@ import java.io.IOException;
 
 import by.bivis.telegramBot.users.User;
 import by.bivis.vkParser.JSONs.GroupSearch;
+import by.bivis.vkParser.JSONs.JSONParser;
+import by.bivis.vkParser.JSONs.tools.FormatText;
+import by.bivis.vkParser.posts.Post;
+import by.bivis.vkParser.posts.attachments.Attachment;
 import by.bivis.vkParser.sources.Source;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaVideo;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -90,6 +100,9 @@ public class TgBot extends TelegramLongPollingBot {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
+        } else if (textFromMessage.equals("/text")) {
+            sendMsg(update.getMessage(), "Бог умер! Бог не_воскреснет! И мы его убили! Как утешимся мы, убийцы из убийц! Самое святое и могущественное Существо, какое только было в мире, истекло кровью под нашими ножами — кто смоет с нас эту кровь?"
+                    , false, new String[]{});
         } else if (textFromMessage.equals("/delete")) {
             String subscriptions = null;
             try {
@@ -195,7 +208,7 @@ public class TgBot extends TelegramLongPollingBot {
         }
 
         //replace _ char to \\_ for escaping exception ...why?
-        sendMessage.setText(text.replaceAll("_", "\\\\_"));
+        sendMessage.setText(FormatText.format(text).replaceAll("_", "\\\\_"));
 
         try {
             if (keyboardArgs != null) {
@@ -258,4 +271,131 @@ public class TgBot extends TelegramLongPollingBot {
         }
     }
 
+    private void sendTextMessage(Post post, int userId) throws SQLException {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(String.valueOf(userId));
+        sendMessage.enableMarkdown(true);
+        sendMessage.setParseMode("HTML");
+        sendMessage.setDisableWebPagePreview(true);
+        String text = "<b>" + manipulator.getSourceById(post.getOwnerId() * -1).getName() + "</b>\n " + post.getText() + "\n-----\n"
+                + post.getLink();
+        try {
+            sendMessage.setText(FormatText.format(text));
+            execute(sendMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(post.getText());
+            System.out.println(post.toString());
+        }
+    }
+
+    private void sendPost(Post post, int userId) throws SQLException, TelegramApiException {
+        // если это простой пост без вложений
+        if (post.getAttachments() != null) {
+
+            List<Attachment> attachments = post.getAttachments();
+            // если в посте одно вложение (фото или видео)
+            if (attachments.size() == 1) {
+                String type = attachments.get(0).getType();
+                InputFile inputFile = new InputFile(attachments.get(0).getUrl());
+                if (type.equals("photo")) {
+                    SendPhoto sendPhoto = new SendPhoto();
+                    sendPhoto.setChatId(String.valueOf(userId));
+                    sendPhoto.setParseMode("HTML");
+                    sendPhoto.setPhoto(inputFile);
+                    System.out.println(post.getOwnerId());
+                    String text = "<b>" + manipulator.getSourceById(post.getOwnerId() * -1).getName() + "</b>\n" + post.getText() + "\n-----\n"
+                            + post.getLink();
+                    sendPhoto.setCaption(FormatText.format(text));
+                    execute(sendPhoto);
+
+                } else if (type.equals("video")) {
+                    SendMessage sendMessage = new SendMessage();
+                    sendMessage.setChatId(String.valueOf(userId));
+                    sendMessage.setParseMode("HTML");
+                    String text = "<b>" + manipulator.getSourceById(post.getOwnerId() * -1).getName() + "</b>\n" + post.getText() + "\n "
+                            + attachments.get(0).getUrl() + "\n " + post.getLink();
+                    sendMessage.setText(FormatText.format(text));
+                    try {
+                        execute(sendMessage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println(inputFile.toString());
+                    }
+
+                } else if (type.equals("nonprint")) {
+                    SendMessage sendMessage = new SendMessage();
+                    sendMessage.setChatId(String.valueOf(userId));
+                    sendMessage.enableMarkdown(true);
+                    sendMessage.setParseMode("HTML");
+                    sendMessage.setText("</b>" + manipulator.getSourceById(post.getOwnerId() * -1).getName() + "</b>\n "
+                            + FormatText.format(post.getText()) + "\n "
+                            + post.getLink() + "\n\n " + "__Пост имеет невыводимое вложение__");
+                    execute(sendMessage);
+                }
+            }
+        }
+    }
+
+    // if printable attachments > 1
+    private void sendAttachmentsPostToSend(Post post, int userId) throws TelegramApiException {
+
+        List<Attachment> attachments = post.getAttachments();
+        SendMediaGroup sendMediaGroup = new SendMediaGroup();
+        sendMediaGroup.setChatId(String.valueOf(userId));
+        List<InputMedia> inputMediaList = new ArrayList<>();
+        for (Attachment attachment : attachments) {
+            String type = attachment.getType();
+            if (type.equals("photo")) {
+                InputMedia inputMedia = new InputMediaPhoto(attachment.getUrl());
+                inputMediaList.add(inputMedia);
+            } else if (type.equals("video")) {
+                InputMedia inputMedia = new InputMediaVideo(attachment.getUrl());
+                inputMediaList.add(inputMedia);
+            }
+        }
+        sendMediaGroup.setMedias(inputMediaList);
+
+        execute(sendMediaGroup);
+    }
+
+    private void sendOut(List<Integer> userIds, Post post) throws TelegramApiException, SQLException {
+        for (int id : userIds) {
+            List<Attachment> attachments = post.getAttachments();
+            if (attachments != null) {
+                if (attachments.size() == 1) {
+                    sendPost(post, id);
+                } else if (post.getPrintableAttachmentsQuantity() > 1) {
+                    sendAttachmentsPostToSend(post, id);
+                }
+            } else {
+                sendTextMessage(post, id);
+            }
+        }
+    }
+
+    public void startSending() throws Exception {
+        int count = 5;
+
+        while (true) {
+            List<Integer> connectedSourceIds = manipulator.getConnectedSourceIds();
+            for (int ownerId:
+                 connectedSourceIds) {
+                List<Integer> connectedUserIds = manipulator.getConnectedUserIds(ownerId);
+                List<Post> posts = JSONParser.makePostObjectsList(ownerId, count);
+                for (Post post : posts) {
+                    if (!manipulator.thereIsPost(post)) {
+                        manipulator.addPost(post);
+                        try {
+                            sendOut(connectedUserIds, post);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        Thread.sleep(200);
+                    }
+                }
+                Thread.sleep(20000);
+            }
+        }
+    }
 }

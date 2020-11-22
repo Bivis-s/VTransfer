@@ -61,11 +61,15 @@ public class Post implements SQLAble {
     }
 
     public String getLink() {
-        return "https://vk.com/w=wall" + ownerId + "_" + id;
+        return "https://vk.com/feed?w=wall" + ownerId + "\\_" + id;
     }
 
     public List<Attachment> getAttachments() {
-        return new ArrayList<>();
+        return null;
+    }
+
+    public int getPrintableAttachmentsQuantity() {
+        return 0;
     }
 
     @Override

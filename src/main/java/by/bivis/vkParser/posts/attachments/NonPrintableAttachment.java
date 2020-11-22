@@ -9,4 +9,14 @@ public class NonPrintableAttachment extends Attachment{
     public String toString() {
         return "NonPrintableAttachment{} " + super.toString();
     }
+
+    @Override
+    public String getType() {
+        return "nonprint";
+    }
+
+    @Override
+    public String getUrl() {
+        return null;
+    }
 }

@@ -18,12 +18,6 @@ public class GroupSearch {
     public GroupSearch() throws IOException {
     }
 
-    public static void main(String[] args) throws Exception {
-        GroupSearch groupSearch = new GroupSearch();
-        System.out.println(groupSearch.makeSourceObjectList("Jjjjsjsjjjjjj", 10));
-        System.out.println(groupSearch.makeSourceObjectFromSearch("лентач"));
-    }
-
     private Source getSource(JsonNode jsonNode) {
         int id = jsonNode.get("id").asInt();
         String screenName = jsonNode.get("screen_name").asText();
