@@ -1,6 +1,5 @@
-package by.bivis.telegramBot;
+package by.bivis.telegram_bot;
 
-import org.telegram.telegrambots.meta.api.methods.send.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -31,7 +30,7 @@ public class KeyboardGenerator {
      * @param strings names of keyboard buttons
      * @return ReplyKeyboardMarkup obj which might me setted to telegrambots Message
      */
-    private static ReplyKeyboardMarkup createReplyKeyboardMarkup(int columnCount, String... strings) {
+    public static ReplyKeyboardMarkup createReplyKeyboardMarkup(int columnCount, String... strings) {
 
         // init Button Queue from string CharSequence
         Queue<KeyboardButton> buttonQueue = new ArrayDeque<>();
@@ -66,28 +65,5 @@ public class KeyboardGenerator {
         keyboard.setSelective(true);
 
         return keyboard;
-    }
-
-    public static void setKeyboard(Object message, int columnCount, String... strings) {
-
-        ReplyKeyboardMarkup replyKeyboardMarkup = createReplyKeyboardMarkup(columnCount, strings);
-
-        //TODO заменить с использованием паттерна посетителя!!!
-
-        if (message instanceof SendPhoto) {
-            ((SendPhoto) message).setReplyMarkup(replyKeyboardMarkup);
-        } else if (message instanceof SendMessage) {
-            ((SendMessage) message).setReplyMarkup(replyKeyboardMarkup);
-        } else if (message instanceof SendVideo) {
-            ((SendVideo) message).setReplyMarkup(replyKeyboardMarkup);
-        } else if (message instanceof SendDocument) {
-            ((SendDocument) message).setReplyMarkup(replyKeyboardMarkup);
-        } else if (message instanceof SendAudio) {
-            ((SendAudio) message).setReplyMarkup(replyKeyboardMarkup);
-        } else {
-            throw new IllegalArgumentException("You tried to set keyboard to unsupported object");
-        }
-
-
     }
 }

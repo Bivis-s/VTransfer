@@ -1,11 +1,18 @@
-package by.bivis.telegramBot.postTypes;
+package by.bivis.telegram_bot.post_types;
 
-import by.bivis.telegramBot.TelegramBot;
-import by.bivis.telegramBot.TelegramChat;
+import by.bivis.telegram_bot.TelegramBot;
+import by.bivis.telegram_bot.TelegramChat;
+import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-public class TextPost implements Sendable {
+import java.util.List;
+
+/**
+ * There must be no Attachable Attachment
+ * (Printable Attachment may be many)
+ */
+public class TextPost extends Post implements Sendable {
 
     private int id;
     private int ownerId;
@@ -15,27 +22,41 @@ public class TextPost implements Sendable {
     private int replyOwnerId;
     private int replyPostId;
     private boolean isReply;
+    private List<Printable> printableAttachmentsList;
 
     public TextPost(int id, int ownerId, int fromId, int date, String text) {
+        super(text);
         this.id = id;
         this.ownerId = ownerId;
         this.fromId = fromId;
         this.date = date;
-        this.text = text;
 
         this.isReply = false;
     }
 
     public TextPost(int id, int ownerId, int fromId, int date, String text, int replyOwnerId, int replyPostId) {
+        super(text);
         this.id = id;
         this.ownerId = ownerId;
         this.fromId = fromId;
         this.date = date;
-        this.text = text;
         this.replyOwnerId = replyOwnerId;
         this.replyPostId = replyPostId;
 
         this.isReply = true;
+    }
+
+    protected String formatPrintableAttachments() {
+        if (printableAttachmentsList != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (Printable printable : printableAttachmentsList) {
+                stringBuilder.append(printable.getText());
+            }
+            return "\n\n" + stringBuilder.toString();
+        } else {
+            return "";
+        }
     }
 
     //TODO Напиисать метод для добавления кнопок-ссылок под пост (ссылка на пост)
@@ -49,10 +70,11 @@ public class TextPost implements Sendable {
                 toSend.setChatId(String.valueOf(chat.getChatId()));
 
                 toSend.setText(bot.dbConnector.getVKSourceNameById(123) +
-                        "\n" +
-                        text +
+                        "\n" + text +
+                        formatPrintableAttachments() +
                         "\n" + "-----" + "\n" +
                         bot.dbConnector.getVKSourceLinkById(321));
+                        //TODO заменить две верхние строки на кнопку под постом
 
                 bot.execute(toSend);
             }

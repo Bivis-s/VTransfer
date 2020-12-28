@@ -2,11 +2,11 @@ package by.bivis.telegram_bot.post_types.attachments.attachable;
 
 import by.bivis.telegram_bot.Tools;
 import by.bivis.telegram_bot.post_types.attachments.Attachment;
+import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaAudio;
 
-public class Audio extends Attachment implements Attachable {
-
+public class Audio extends Attachment implements Attachable, Printable {
     private final InputMediaAudio audio;
     private final String artist;
     private final String title;
@@ -26,15 +26,25 @@ public class Audio extends Attachment implements Attachable {
         this.duration = duration;
     }
 
+    public InputMediaAudio getAudio() {
+        return audio;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
 
     @Override
     public InputMedia getMedia() {
         return audio;
-    }
-
-    @Override
-    public boolean hasText() {
-        return true;
     }
 
     //TODO ADD JAVADOC

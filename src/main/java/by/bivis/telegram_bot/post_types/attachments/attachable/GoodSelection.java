@@ -1,9 +1,9 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
+import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
-public class GoodSelection extends Photo implements Attachable {
-
+public class GoodSelection extends Photo implements Printable {
     private final String name;
     private final String price;
     private final int count;
@@ -22,18 +22,25 @@ public class GoodSelection extends Photo implements Attachable {
         this.count = count;
     }
 
-    @Override
-    public boolean hasText() {
-        return true;
+    public String getName() {
+        return name;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public int getCount() {
+        return count;
     }
 
     //TODO ADD JAVADOC
     @Override
     public String getText() {
         if (price != null) {
-            return String.format("Товар: %s\nЦена: %s", name, price);
+            return String.format("\uD83D\uDECD Товар: %s\nЦена: %s", name, price);
         } else {
-            return String.format("Подборка товаров: %s\nКоличество: %s", name, count);
+            return String.format("\uD83D\uDECD Подборка товаров: %s\nКоличество: %s", name, count);
         }
     }
 }

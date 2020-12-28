@@ -5,7 +5,6 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
 public class Photo extends Attachment implements Attachable {
-
     private final InputMediaPhoto photo;
 
     public Photo(InputMediaPhoto photo) {
@@ -16,18 +15,12 @@ public class Photo extends Attachment implements Attachable {
         this.photo = new InputMediaPhoto(photoPath);
     }
 
-    @Override
-    public InputMedia getMedia() {
+    public InputMediaPhoto getPhoto() {
         return photo;
     }
 
     @Override
-    public boolean hasText() {
-        return false;
-    }
-
-    @Override
-    public String getText() {
-        return null;
+    public InputMedia getMedia() {
+        return photo;
     }
 }

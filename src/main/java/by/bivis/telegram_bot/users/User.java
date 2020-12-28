@@ -1,4 +1,4 @@
-package by.bivis.telegramBot.users;
+package by.bivis.telegram_bot.users;
 
 import by.bivis.database.SQLAble;
 

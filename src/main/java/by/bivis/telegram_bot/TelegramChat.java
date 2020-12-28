@@ -1,4 +1,4 @@
-package by.bivis.telegramBot;
+package by.bivis.telegram_bot;
 
 
 public class TelegramChat {
