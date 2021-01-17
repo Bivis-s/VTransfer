@@ -3,40 +3,46 @@ package by.bivis.telegram_bot.post_types.attachments.attachable;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
+import java.io.File;
+
 public class GoodSelection extends Photo implements Printable {
-    private final String name;
-    private final String price;
-    private final int count;
+    private String name;
+    private String price;
+    private int count;
 
-    public GoodSelection(InputMediaPhoto photo, String name, String price) {
-        super(photo);
+    public GoodSelection() {
+    }
+
+    @Override
+    public GoodSelection setPhoto(File photo) {
+        super.setPhoto(photo);
+        return this;
+    }
+
+    @Override
+    public GoodSelection setPhoto(String photoPath) {
+        super.setPhoto(photoPath);
+        return this;
+    }
+
+    public GoodSelection setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public GoodSelection setPrice(String price) {
         this.price = price;
-        this.count = 0;
+        return this;
     }
 
-    public GoodSelection(String photoPath, String name, int count) {
-        super(photoPath);
-        this.name = name;
-        this.price = null;
+    public GoodSelection setCount(int count) {
         this.count = count;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public int getCount() {
-        return count;
+        return this;
     }
 
     //TODO ADD JAVADOC
     @Override
-    public String getText() {
+    public String getFormattedText() {
         if (price != null) {
             return String.format("\uD83D\uDECD Товар: %s\nЦена: %s", name, price);
         } else {

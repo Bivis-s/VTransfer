@@ -3,12 +3,20 @@ package by.bivis.telegram_bot.post_types.attachments.printable;
 import java.util.List;
 
 public class Poll implements Printable {
-    private final String question;
-    private final List<String> answers;
+    private String question;
+    private List<String> answers;
 
-    public Poll(String question, List<String> answers) {
+    public Poll() {
+    }
+
+    public Poll setQuestion(String question) {
         this.question = question;
+        return this;
+    }
+
+    public Poll setAnswers(List<String> answers) {
         this.answers = answers;
+        return this;
     }
 
     private String buildAnswersString() {
@@ -23,7 +31,7 @@ public class Poll implements Printable {
     }
 
     @Override
-    public String getText() {
+    public String getFormattedText() {
         return String.format("❓ [Опрос] %s\n%s", question, buildAnswersString());
     }
 }

@@ -1,55 +1,60 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
 import by.bivis.telegram_bot.Tools;
-import by.bivis.telegram_bot.post_types.attachments.Attachment;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaAudio;
 
-public class Audio extends Attachment implements Attachable, Printable {
-    private final InputMediaAudio audio;
-    private final String artist;
-    private final String title;
-    private final int duration;
+import java.io.File;
 
-    public Audio(InputMediaAudio audio, String artist, String title, int duration) {
+public class Audio implements Attachable, Printable {
+    private File audio;
+    private String artist;
+    private String title;
+    private int duration;
+
+    public Audio() {
+    }
+
+    public Audio setAudio(File audio) {
         this.audio = audio;
+        return this;
+    }
+
+    public Audio setAudio(String audioPath) {
+        this.audio = new File(audioPath);
+        return this;
+    }
+
+    public Audio setArtist(String artist) {
         this.artist = artist;
+        return this;
+    }
+
+    public Audio setTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public Audio setDuration(int duration) {
         this.duration = duration;
-    }
-
-    public Audio(String audioPath, String artist, String title, int duration) {
-        this.audio = new InputMediaAudio(audioPath);
-        this.artist = artist;
-        this.title = title;
-        this.duration = duration;
-    }
-
-    public InputMediaAudio getAudio() {
-        return audio;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getDuration() {
-        return duration;
+        return this;
     }
 
     @Override
-    public InputMedia getMedia() {
-        return audio;
+    public InputFile getInputFile() {
+        return new InputFile(audio);
+    }
+
+    @Override
+    public InputMedia getInputMedia() {
+        return new InputMediaAudio(audio.getPath());
     }
 
     //TODO ADD JAVADOC
     @Override
-    public String getText() {
+    public String getFormattedText() {
         return String.format("\uD83D\uDD0A [%s] %s – %s", Tools.getFormattedDuration(duration), artist, title);
     }
 }

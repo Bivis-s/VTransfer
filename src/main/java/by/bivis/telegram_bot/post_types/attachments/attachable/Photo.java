@@ -1,26 +1,34 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
-import by.bivis.telegram_bot.post_types.attachments.Attachment;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
-public class Photo extends Attachment implements Attachable {
-    private final InputMediaPhoto photo;
+import java.io.File;
 
-    public Photo(InputMediaPhoto photo) {
+public class Photo implements Attachable {
+    private File photo;
+
+    public Photo() {
+    }
+
+    public Photo setPhoto(File photo) {
         this.photo = photo;
+        return this;
     }
 
-    public Photo(String photoPath) {
-        this.photo = new InputMediaPhoto(photoPath);
-    }
-
-    public InputMediaPhoto getPhoto() {
-        return photo;
+    public Photo setPhoto(String photoPath) {
+        this.photo = new File(photoPath);
+        return this;
     }
 
     @Override
-    public InputMedia getMedia() {
-        return photo;
+    public InputFile getInputFile() {
+        return new InputFile(photo);
+    }
+
+    @Override
+    public InputMedia getInputMedia() {
+        return new InputMediaPhoto(photo.getPath());
     }
 }

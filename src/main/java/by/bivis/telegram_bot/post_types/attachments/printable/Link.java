@@ -1,26 +1,24 @@
 package by.bivis.telegram_bot.post_types.attachments.printable;
 
-import by.bivis.telegram_bot.post_types.attachments.Attachment;
+public class Link implements Printable {
+    private String url;
+    private String title;
 
-public class Link extends Attachment implements Printable {
-    private final String url;
-    private final String title;
+    public Link() {
+    }
 
-    public Link(String url, String title) {
+    public Link setUrl(String url) {
         this.url = url;
+        return this;
+    }
+
+    public Link setTitle(String title) {
         this.title = title;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getTitle() {
-        return title;
+        return this;
     }
 
     @Override
-    public String getText() {
+    public String getFormattedText() {
         return String.format("\uD83C\uDF10 [Ссылка] %s\n%s", title, url);
     }
 }

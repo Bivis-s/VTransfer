@@ -1,22 +1,24 @@
 package by.bivis.telegram_bot.post_types.attachments.printable;
 
-import by.bivis.telegram_bot.post_types.attachments.Attachment;
+public class Note implements Printable {
+    private String title;
+    private String text;
 
-public class Note extends Attachment implements Printable {
-    private final String title;
-    private final String noteText;
-
-    public Note(String title, String noteText) {
-        this.title = title;
-        this.noteText = noteText;
+    public Note() {
     }
 
-    public String getTitle() {
-        return title;
+    public Note setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Note setText(String text) {
+        this.text = text;
+        return this;
     }
 
     @Override
-    public String getText() {
-        return String.format("\uD83D\uDCDD [Заметка] %s\n%s", title, noteText);
+    public String getFormattedText() {
+        return String.format("\uD83D\uDCDD [Заметка] %s\n%s", title, text);
     }
 }

@@ -1,18 +1,18 @@
 package by.bivis.telegram_bot.post_types.attachments.printable;
 
 public class WikiPage implements Printable{
-    private final String title;
+    private String title;
 
-    public WikiPage(String title) {
-        this.title = title;
+    public WikiPage() {
     }
 
-    public String getTitle() {
-        return title;
+    public WikiPage setTitle(String title) {
+        this.title = title;
+        return this;
     }
 
     @Override
-    public String getText() {
+    public String getFormattedText() {
         return String.format("\uD83D\uDCC3 [Вики страница] %s", title);
     }
 }

@@ -1,55 +1,60 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
 import by.bivis.telegram_bot.Tools;
-import by.bivis.telegram_bot.post_types.attachments.Attachment;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaDocument;
 
-public class Document extends Attachment implements Attachable, Printable {
-    private final InputMediaDocument document;
-    private final String title;
-    private final int size;
-    private final String ext;
+import java.io.File;
 
-    public Document(InputMediaDocument document, String title, int size, String ext) {
+public class Document implements Attachable, Printable {
+    private File document;
+    private String title;
+    private int size;
+    private String ext;
+
+    public Document() {
+    }
+
+    public Document setDocument(File document) {
         this.document = document;
+        return this;
+    }
+
+    public Document setDocument(String documentPath) {
+        this.document = new File(documentPath);
+        return this;
+    }
+
+    public Document setTitle(String title) {
         this.title = title;
+        return this;
+    }
+
+    public Document setSize(int size) {
         this.size = size;
+        return this;
+    }
+
+    public Document setExt(String ext) {
         this.ext = ext;
-    }
-
-    public Document(String documentPath, String title, int size, String ext) {
-        this.document = new InputMediaDocument(documentPath);
-        this.title = title;
-        this.size = size;
-        this.ext = ext;
-    }
-
-    public InputMediaDocument getDocument() {
-        return document;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public String getExt() {
-        return ext;
+        return this;
     }
 
     @Override
-    public InputMedia getMedia() {
-        return document;
+    public InputFile getInputFile() {
+        return new InputFile(document);
+    }
+
+    @Override
+    public InputMedia getInputMedia() {
+        return new InputMediaDocument(document.getPath());
     }
 
     //TODO ADD JAVADOC
     @Override
-    public String getText() {
+    public String getFormattedText() {
         return String.format("\uD83D\uDDCE [%s] %s %s", ext.toUpperCase(), title, Tools.getFormattedSize(size));
     }
 }
