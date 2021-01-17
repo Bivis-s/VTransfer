@@ -1,9 +1,9 @@
 package by.bivis.telegram_bot.post_types;
 
-import by.bivis.telegram_bot.TelegramBot;
 import by.bivis.telegram_bot.TelegramChat;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
@@ -12,46 +12,40 @@ import java.util.List;
  * There must be no Attachable Attachment
  * (Printable Attachment may be many)
  */
-public class TextPost extends Post implements Sendable {
+public class TextPost implements Sendable {
+    protected String text;
+    protected Sendable replyPost;
+    protected InlineKeyboardMarkup inlineKeyboardMarkup;
+    protected List<Printable> printableAttachmentList;
 
-    private int id;
-    private int ownerId;
-    private int fromId;
-    private int date;
-    private String text;
-    private int replyOwnerId;
-    private int replyPostId;
-    private boolean isReply;
-    private List<Printable> printableAttachmentsList;
-
-    public TextPost(int id, int ownerId, int fromId, int date, String text) {
-        super(text);
-        this.id = id;
-        this.ownerId = ownerId;
-        this.fromId = fromId;
-        this.date = date;
-
-        this.isReply = false;
+    public TextPost() {
     }
 
-    public TextPost(int id, int ownerId, int fromId, int date, String text, int replyOwnerId, int replyPostId) {
-        super(text);
-        this.id = id;
-        this.ownerId = ownerId;
-        this.fromId = fromId;
-        this.date = date;
-        this.replyOwnerId = replyOwnerId;
-        this.replyPostId = replyPostId;
+    public TextPost setText(String text) {
+        this.text = text;
+        return this;
+    }
 
-        this.isReply = true;
+    public TextPost setReplyPost(Sendable replyPost) {
+        this.replyPost = replyPost;
+        return this;
+    }
+
+    public TextPost setInlineKeyboardMarkup(InlineKeyboardMarkup inlineKeyboardMarkup) {
+        this.inlineKeyboardMarkup = inlineKeyboardMarkup;
+        return this;
+    }
+
+    public TextPost setPrintableAttachmentList(List<Printable> printableAttachmentList) {
+        this.printableAttachmentList = printableAttachmentList;
+        return this;
     }
 
     protected String formatPrintableAttachments() {
-        if (printableAttachmentsList != null) {
+        if (printableAttachmentList != null) {
             StringBuilder stringBuilder = new StringBuilder();
-
-            for (Printable printable : printableAttachmentsList) {
-                stringBuilder.append(printable.getText());
+            for (Printable printable : printableAttachmentList) {
+                stringBuilder.append(printable.getFormattedText()).append("\n");
             }
             return "\n\n" + stringBuilder.toString();
         } else {
@@ -59,26 +53,27 @@ public class TextPost extends Post implements Sendable {
         }
     }
 
-    //TODO Напиисать метод для добавления кнопок-ссылок под пост (ссылка на пост)
+    protected String getSeparatedText() {
+        return "\n" + text + "\n";
+    }
+
+    public boolean isReply() {
+        return replyPost != null;
+    }
+
     @Override
     public void send(TelegramChat... chats) throws TelegramApiException {
-        if (!isReply) {
+        if (!isReply()) {
             for (TelegramChat chat : chats) {
-
-                TelegramBot bot = chat.getBot();
                 SendMessage toSend = new SendMessage();
-                toSend.setChatId(String.valueOf(chat.getChatId()));
-
-                toSend.setText(bot.dbConnector.getVKSourceNameById(123) +
-                        "\n" + text +
-                        formatPrintableAttachments() +
-                        "\n" + "-----" + "\n" +
-                        bot.dbConnector.getVKSourceLinkById(321));
-                        //TODO заменить две верхние строки на кнопку под постом
-
-                bot.execute(toSend);
+                toSend.setChatId(chat.getChatId());
+                toSend.setText(getSeparatedText() + formatPrintableAttachments());
+                if (inlineKeyboardMarkup != null) {
+                    toSend.setReplyMarkup(inlineKeyboardMarkup);
+                }
+                (chat.getBot()).execute(toSend);
             }
-        } else {
+        } else if (isReply()) {
             //TODO Implement sending reply-Posts
         }
     }
