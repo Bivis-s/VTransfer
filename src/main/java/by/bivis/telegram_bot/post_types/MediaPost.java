@@ -3,10 +3,12 @@ package by.bivis.telegram_bot.post_types;
 import by.bivis.telegram_bot.TelegramChat;
 import by.bivis.telegram_bot.post_types.attachments.attachable.*;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
+import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -23,14 +25,20 @@ public class MediaPost extends TextPost implements Sendable {
     }
 
     @Override
+    public MediaPost setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+        return this;
+    }
+
+    @Override
     public MediaPost setText(String text) {
         super.setText(text);
         return this;
     }
 
     @Override
-    public MediaPost setReplyPost(Sendable replyPost) {
-        super.setReplyPost(replyPost);
+    public MediaPost setReplyPostId(int replyPost) {
+        super.setReplyPostId(replyPost);
         return this;
     }
 
@@ -74,11 +82,15 @@ public class MediaPost extends TextPost implements Sendable {
         }
     }
 
+    //TODO убрать дубликаты кода написав фасад для SendPhoto, SendAudio, SendDocument, SendVideo.
     private void sendPhoto(TelegramChat chat) throws TelegramApiException {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(attachableAttachment.getInputFile());
         sendPhoto.setChatId(chat.getChatId());
-        sendPhoto.setCaption(getSeparatedText() + formatPrintableAttachments());
+        if (replyPostId != 0) {
+            sendPhoto.setReplyToMessageId(replyPostId);
+        }
+        sendPhoto.setCaption(getFormattedSourceName() + getFormattedText() + formatPrintableAttachments());
         if (inlineKeyboardMarkup != null) {
             sendPhoto.setReplyMarkup(inlineKeyboardMarkup);
         }
@@ -89,8 +101,11 @@ public class MediaPost extends TextPost implements Sendable {
         SendVideo sendVideo = new SendVideo();
         sendVideo.setVideo(attachableAttachment.getInputFile());
         sendVideo.setChatId(chat.getChatId());
-        sendVideo.setCaption(((Printable) attachableAttachment).getFormattedText() + "\n" +
-                getSeparatedText() + formatPrintableAttachments());
+        if (replyPostId != 0) {
+            sendVideo.setReplyToMessageId(replyPostId);
+        }
+        sendVideo.setCaption(getFormattedSourceName() + ((Printable) attachableAttachment).getFormattedText() + "\n" +
+                getFormattedText() + formatPrintableAttachments());
         if (inlineKeyboardMarkup != null) {
             sendVideo.setReplyMarkup(inlineKeyboardMarkup);
         }
@@ -101,8 +116,11 @@ public class MediaPost extends TextPost implements Sendable {
         SendDocument sendDocument = new SendDocument();
         sendDocument.setDocument(attachableAttachment.getInputFile());
         sendDocument.setChatId(chat.getChatId());
-        sendDocument.setCaption(((Printable) attachableAttachment).getFormattedText() + "\n" +
-                getSeparatedText() + formatPrintableAttachments());
+        if (replyPostId != 0) {
+            sendDocument.setReplyToMessageId(replyPostId);
+        }
+        sendDocument.setCaption(getFormattedSourceName() + ((Printable) attachableAttachment).getFormattedText() +
+                "\n" + getFormattedText() + formatPrintableAttachments());
         if (inlineKeyboardMarkup != null) {
             sendDocument.setReplyMarkup(inlineKeyboardMarkup);
         }
@@ -113,8 +131,11 @@ public class MediaPost extends TextPost implements Sendable {
         SendAudio sendAudio = new SendAudio();
         sendAudio.setAudio(attachableAttachment.getInputFile());
         sendAudio.setChatId(chat.getChatId());
-        sendAudio.setCaption(((Printable) attachableAttachment).getFormattedText() + "\n" +
-                getSeparatedText() + formatPrintableAttachments());
+        if (replyPostId != 0) {
+            sendAudio.setReplyToMessageId(replyPostId);
+        }
+        sendAudio.setCaption(getFormattedSourceName() + ((Printable) attachableAttachment).getFormattedText() + "\n" +
+                getFormattedText() + formatPrintableAttachments());
         if (inlineKeyboardMarkup != null) {
             sendAudio.setReplyMarkup(inlineKeyboardMarkup);
         }
@@ -132,8 +153,11 @@ public class MediaPost extends TextPost implements Sendable {
         SendPhoto sendPhoto = new SendPhoto();
         sendPhoto.setPhoto(attachableAttachment.getInputFile());
         sendPhoto.setChatId(chat.getChatId());
-        sendPhoto.setCaption(((Printable) attachableAttachment).getFormattedText() + "\n" +
-                getSeparatedText() + formatPrintableAttachments());
+        if (replyPostId != 0) {
+            sendPhoto.setReplyToMessageId(replyPostId);
+        }
+        sendPhoto.setCaption(getFormattedSourceName() + ((Printable) attachableAttachment).getFormattedText() + "\n" +
+                getFormattedText() + formatPrintableAttachments());
         if (inlineKeyboardMarkup != null) {
             sendPhoto.setReplyMarkup(inlineKeyboardMarkup);
         }

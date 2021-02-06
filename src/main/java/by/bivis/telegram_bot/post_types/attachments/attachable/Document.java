@@ -3,13 +3,11 @@ package by.bivis.telegram_bot.post_types.attachments.attachable;
 import by.bivis.telegram_bot.Tools;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaDocument;
 
-import java.io.File;
 
 public class Document implements Attachable, Printable {
-    private File document;
+    private String documentPath;
     private String title;
     private int size;
     private String ext;
@@ -17,13 +15,8 @@ public class Document implements Attachable, Printable {
     public Document() {
     }
 
-    public Document setDocument(File document) {
-        this.document = document;
-        return this;
-    }
-
     public Document setDocument(String documentPath) {
-        this.document = new File(documentPath);
+        this.documentPath = documentPath;
         return this;
     }
 
@@ -44,12 +37,12 @@ public class Document implements Attachable, Printable {
 
     @Override
     public InputFile getInputFile() {
-        return new InputFile(document);
+        return new InputFile(documentPath);
     }
 
     @Override
-    public InputMedia getInputMedia() {
-        return new InputMediaDocument(document.getPath());
+    public InputMediaDocument getInputMedia() {
+        return new InputMediaDocument(documentPath);
     }
 
     //TODO ADD JAVADOC

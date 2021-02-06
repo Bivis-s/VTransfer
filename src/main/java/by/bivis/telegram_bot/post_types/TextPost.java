@@ -13,12 +13,22 @@ import java.util.List;
  * (Printable Attachment may be many)
  */
 public class TextPost implements Sendable {
+    protected String sourceName;
     protected String text;
-    protected Sendable replyPost;
+    protected int replyPostId;
     protected InlineKeyboardMarkup inlineKeyboardMarkup;
     protected List<Printable> printableAttachmentList;
 
     public TextPost() {
+    }
+
+    public TextPost setSourceName(String sourceName) {
+        this.sourceName = sourceName;
+        return this;
+    }
+
+    protected String getFormattedSourceName() {
+        return "<b>" + sourceName + "</b>\n";
     }
 
     public TextPost setText(String text) {
@@ -26,8 +36,8 @@ public class TextPost implements Sendable {
         return this;
     }
 
-    public TextPost setReplyPost(Sendable replyPost) {
-        this.replyPost = replyPost;
+    public TextPost setReplyPostId(int replyPostId) {
+        this.replyPostId = replyPostId;
         return this;
     }
 
@@ -53,12 +63,20 @@ public class TextPost implements Sendable {
         }
     }
 
-    protected String getSeparatedText() {
+    private String escapeSpecChars(String text) {
+        return text
+                .replaceAll("\\*", "\\*")
+                .replaceAll("_", "\\_")
+                .replaceAll("`", "\\`")
+                .replaceAll("\\[", "\\[");
+    }
+
+    protected String getFormattedText() {
         return "\n" + text + "\n";
     }
 
     public boolean isReply() {
-        return replyPost != null;
+        return replyPostId != 0;
     }
 
     @Override
@@ -67,7 +85,9 @@ public class TextPost implements Sendable {
             for (TelegramChat chat : chats) {
                 SendMessage toSend = new SendMessage();
                 toSend.setChatId(chat.getChatId());
-                toSend.setText(getSeparatedText() + formatPrintableAttachments());
+                toSend.enableMarkdownV2(true);
+                toSend.enableHtml(true);
+                toSend.setText(escapeSpecChars(getFormattedSourceName() + getFormattedText() + formatPrintableAttachments()));
                 if (inlineKeyboardMarkup != null) {
                     toSend.setReplyMarkup(inlineKeyboardMarkup);
                 }

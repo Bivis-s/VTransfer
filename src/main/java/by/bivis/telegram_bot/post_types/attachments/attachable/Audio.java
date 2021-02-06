@@ -3,13 +3,10 @@ package by.bivis.telegram_bot.post_types.attachments.attachable;
 import by.bivis.telegram_bot.Tools;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaAudio;
 
-import java.io.File;
-
 public class Audio implements Attachable, Printable {
-    private File audio;
+    private String audioPath;
     private String artist;
     private String title;
     private int duration;
@@ -17,13 +14,8 @@ public class Audio implements Attachable, Printable {
     public Audio() {
     }
 
-    public Audio setAudio(File audio) {
-        this.audio = audio;
-        return this;
-    }
-
     public Audio setAudio(String audioPath) {
-        this.audio = new File(audioPath);
+        this.audioPath = audioPath;
         return this;
     }
 
@@ -44,12 +36,12 @@ public class Audio implements Attachable, Printable {
 
     @Override
     public InputFile getInputFile() {
-        return new InputFile(audio);
+        return new InputFile(audioPath);
     }
 
     @Override
-    public InputMedia getInputMedia() {
-        return new InputMediaAudio(audio.getPath());
+    public InputMediaAudio getInputMedia() {
+        return new InputMediaAudio(audioPath);
     }
 
     //TODO ADD JAVADOC

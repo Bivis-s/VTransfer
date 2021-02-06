@@ -1,9 +1,6 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
-
-import java.io.File;
 
 public class GoodSelection extends Photo implements Printable {
     private String name;
@@ -11,12 +8,6 @@ public class GoodSelection extends Photo implements Printable {
     private int count;
 
     public GoodSelection() {
-    }
-
-    @Override
-    public GoodSelection setPhoto(File photo) {
-        super.setPhoto(photo);
-        return this;
     }
 
     @Override

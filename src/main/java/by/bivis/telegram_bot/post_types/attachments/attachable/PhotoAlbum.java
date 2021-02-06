@@ -1,23 +1,12 @@
 package by.bivis.telegram_bot.post_types.attachments.attachable;
 
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
-
-import java.io.File;
 
 public class PhotoAlbum extends Photo implements Printable {
     private String title;
     private int size;
 
     public PhotoAlbum() {
-    }
-
-    @Override
-    public PhotoAlbum setPhoto(File photo) {
-        super.setPhoto(photo);
-        return this;
     }
 
     @Override

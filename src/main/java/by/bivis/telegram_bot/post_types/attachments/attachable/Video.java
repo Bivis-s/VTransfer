@@ -3,13 +3,11 @@ package by.bivis.telegram_bot.post_types.attachments.attachable;
 import by.bivis.telegram_bot.Tools;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaVideo;
 
-import java.io.File;
 
 public class Video implements Attachable, Printable {
-    private File video;
+    private String videoPath;
     private String title;
     private String description;
     private int duration;
@@ -17,13 +15,8 @@ public class Video implements Attachable, Printable {
     public Video() {
     }
 
-    public Video setVideo(File video) {
-        this.video = video;
-        return this;
-    }
-
     public Video setVideo(String videoPath) {
-        this.video = new File(videoPath);
+        this.videoPath = videoPath;
         return this;
     }
 
@@ -44,12 +37,12 @@ public class Video implements Attachable, Printable {
 
     @Override
     public InputFile getInputFile() {
-        return new InputFile(video);
+        return new InputFile(videoPath);
     }
 
     @Override
-    public InputMedia getInputMedia() {
-        return new InputMediaVideo(video.getPath());
+    public InputMediaVideo getInputMedia() {
+        return new InputMediaVideo(videoPath);
     }
 
     //TODO ADD JAVADOC
