@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Queue;
 
 public class KeyboardGenerator {
-
     /**
      * Creates a row list with a specified number of columns
      *
@@ -124,5 +123,23 @@ public class KeyboardGenerator {
      */
     public static InlineKeyboardMarkup createInlineKeyboardMarkup(int columnCount, String... strings) {
         return new InlineKeyboardMarkup(createInlineKeyboardButtonMatrix(columnCount, strings));
+    }
+
+    /**
+     * Creates a link-button under message with Source Name and Source url
+     *
+     * @param sourceName Button Text
+     * @param url Button redirect url
+     * @return InlineKeyboardMarkup Button
+     */
+    public static InlineKeyboardMarkup createInlineSourceLink(String sourceName, String url) {
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> buttonRow = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(sourceName);
+        button.setUrl(url);
+        buttonRow.add(button);
+        rows.add(buttonRow);
+        return new InlineKeyboardMarkup(rows);
     }
 }

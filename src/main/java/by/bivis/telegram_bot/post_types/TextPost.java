@@ -2,6 +2,8 @@ package by.bivis.telegram_bot.post_types;
 
 import by.bivis.telegram_bot.TelegramChat;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -12,6 +14,8 @@ import java.util.List;
  * There must be no Attachable Attachment
  * (Printable Attachment may be many)
  */
+@SuperBuilder
+@AllArgsConstructor
 public class TextPost implements Sendable {
     protected String sourceName;
     protected String text;
@@ -19,36 +23,8 @@ public class TextPost implements Sendable {
     protected InlineKeyboardMarkup inlineKeyboardMarkup;
     protected List<Printable> printableAttachmentList;
 
-    public TextPost() {
-    }
-
-    public TextPost setSourceName(String sourceName) {
-        this.sourceName = sourceName;
-        return this;
-    }
-
     protected String getFormattedSourceName() {
         return "<b>" + sourceName + "</b>\n";
-    }
-
-    public TextPost setText(String text) {
-        this.text = text;
-        return this;
-    }
-
-    public TextPost setReplyPostId(int replyPostId) {
-        this.replyPostId = replyPostId;
-        return this;
-    }
-
-    public TextPost setInlineKeyboardMarkup(InlineKeyboardMarkup inlineKeyboardMarkup) {
-        this.inlineKeyboardMarkup = inlineKeyboardMarkup;
-        return this;
-    }
-
-    public TextPost setPrintableAttachmentList(List<Printable> printableAttachmentList) {
-        this.printableAttachmentList = printableAttachmentList;
-        return this;
     }
 
     protected String formatPrintableAttachments() {

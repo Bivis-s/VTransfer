@@ -1,4 +1,4 @@
-package by.bivis.telegramBot;
+package by.bivis.telegram_bot;
 
 import by.bivis.database.Manipulator;
 import by.bivis.settings.Settings;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
 
-import by.bivis.telegramBot.users.User;
+import by.bivis.telegram_bot.users.User;
 import by.bivis.vkParser.JSONs.GroupSearch;
 import by.bivis.vkParser.JSONs.JSONParser;
 import by.bivis.vkParser.JSONs.tools.FormatText;
@@ -16,11 +16,9 @@ import by.bivis.vkParser.posts.Post;
 import by.bivis.vkParser.posts.attachments.Attachment;
 import by.bivis.vkParser.sources.Source;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -122,7 +120,7 @@ public class TgBot extends TelegramLongPollingBot {
                 }
             }
         } else if (textFromMessage.equals("/killme")) {
-            try { //TODO полный ресет этой командой, пока только удаляет пользователя, но не удаляет его подписки
+            try {
                 manipulator.deleteUser(user);
 
                 sendMsg(update.getMessage(), "Прощай... \uD83D\uDE25", false, new String[]{});
@@ -140,7 +138,6 @@ public class TgBot extends TelegramLongPollingBot {
                     //Определяем что нам передано: название группы для поиска или ссылка и соответсвующим методом делаем объект источника
                     Source source;
                     if (textFromMessage.contains("vk.com/")) {
-                        //TODO заменить бы эту хуйню на нормальный regex
                         String screen_name = textFromMessage.replaceFirst("https://", "").replaceFirst("vk\\.com/", "");
                         source = groupSearch.makeSourceFromScreenName(screen_name);
                     } else {
@@ -375,7 +372,7 @@ public class TgBot extends TelegramLongPollingBot {
     }
 
     public void startSending() throws Exception {
-        int count = 5;
+        int count = 15;
 
         while (true) {
             List<Integer> connectedSourceIds = manipulator.getConnectedSourceIds();

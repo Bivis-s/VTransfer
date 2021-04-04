@@ -1,7 +1,5 @@
 package by.bivis.vkParser.posts.attachments;
 
-
-//TODO Реализовать интерфейс работы с вложениями
 public abstract class Attachment {
     private final String type;
 

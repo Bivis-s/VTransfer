@@ -3,12 +3,13 @@ package by.bivis.telegram_bot.post_types;
 import by.bivis.telegram_bot.TelegramChat;
 import by.bivis.telegram_bot.post_types.attachments.attachable.*;
 import by.bivis.telegram_bot.post_types.attachments.printable.Printable;
-import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.experimental.SuperBuilder;
 import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -18,46 +19,9 @@ import java.util.List;
  * There must be only 1 Attachable Attachment
  * (Printable Attachment may be many)
  */
+@SuperBuilder
 public class MediaPost extends TextPost implements Sendable {
-    private Attachable attachableAttachment;
-
-    public MediaPost() {
-    }
-
-    @Override
-    public MediaPost setSourceName(String sourceName) {
-        this.sourceName = sourceName;
-        return this;
-    }
-
-    @Override
-    public MediaPost setText(String text) {
-        super.setText(text);
-        return this;
-    }
-
-    @Override
-    public MediaPost setReplyPostId(int replyPost) {
-        super.setReplyPostId(replyPost);
-        return this;
-    }
-
-    @Override
-    public MediaPost setInlineKeyboardMarkup(InlineKeyboardMarkup inlineKeyboardMarkup) {
-        super.setInlineKeyboardMarkup(inlineKeyboardMarkup);
-        return this;
-    }
-
-    @Override
-    public MediaPost setPrintableAttachmentList(List<Printable> printableAttachmentList) {
-        super.setPrintableAttachmentList(printableAttachmentList);
-        return this;
-    }
-
-    public MediaPost setAttachableAttachment(Attachable attachment) {
-        this.attachableAttachment = attachment;
-        return this;
-    }
+    private final Attachable attachableAttachment;
 
     @Override
     public void send(TelegramChat... chats) throws TelegramApiException {

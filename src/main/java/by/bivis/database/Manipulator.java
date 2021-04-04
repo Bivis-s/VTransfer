@@ -1,6 +1,6 @@
 package by.bivis.database;
 
-import by.bivis.telegramBot.users.User;
+import by.bivis.telegram_bot.users.User;
 import by.bivis.vkParser.posts.Post;
 import by.bivis.vkParser.sources.Source;
 

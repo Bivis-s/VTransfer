@@ -6,11 +6,9 @@ import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO
 public class AttachableContainer extends ArrayList<Attachable> {
     private List<Attachable> attachableList = new ArrayList<>();
-
-    public AttachableContainer() {
-    }
 
     public AttachableContainer(List<Attachable> attachableList) {
         this.attachableList = attachableList;
